@@ -1,38 +1,56 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import {
+  sessions,
+  telemetryEvents,
+  type CreateSessionRequest,
+  type UpdateSessionRequest,
+  type SessionResponse,
+  type CreateTelemetryEventRequest,
+  type TelemetryEventResponse
+} from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getSessions(): Promise<SessionResponse[]>;
+  getSession(id: number): Promise<SessionResponse | undefined>;
+  createSession(session: CreateSessionRequest): Promise<SessionResponse>;
+  updateSession(id: number, updates: UpdateSessionRequest): Promise<SessionResponse>;
+  
+  getTelemetryEvents(sessionId: number): Promise<TelemetryEventResponse[]>;
+  createTelemetryEvent(event: CreateTelemetryEventRequest): Promise<TelemetryEventResponse>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DatabaseStorage implements IStorage {
+  async getSessions(): Promise<SessionResponse[]> {
+    return await db.select().from(sessions);
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getSession(id: number): Promise<SessionResponse | undefined> {
+    const [session] = await db.select().from(sessions).where(eq(sessions.id, id));
+    return session;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async createSession(session: CreateSessionRequest): Promise<SessionResponse> {
+    const [newSession] = await db.insert(sessions).values(session).returning();
+    return newSession;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async updateSession(id: number, updates: UpdateSessionRequest): Promise<SessionResponse> {
+    const [updated] = await db.update(sessions)
+      .set(updates)
+      .where(eq(sessions.id, id))
+      .returning();
+    return updated;
+  }
+
+  async getTelemetryEvents(sessionId: number): Promise<TelemetryEventResponse[]> {
+    return await db.select().from(telemetryEvents).where(eq(telemetryEvents.sessionId, sessionId));
+  }
+
+  async createTelemetryEvent(event: CreateTelemetryEventRequest): Promise<TelemetryEventResponse> {
+    const [newEvent] = await db.insert(telemetryEvents).values(event).returning();
+    return newEvent;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
