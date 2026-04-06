@@ -1,8 +1,0 @@
-
-> rest-express@1.0.0 dev
-> NODE_ENV=development tsx server/index.ts
-
-[1G[0K10:07:30 PM [express] serving on port 5000
-10:07:38 PM [express] GET /api/sessions 200 in 7ms :: [{"id":1,"title":"Morning Sync","startTime":"2026-03-10T22:07:29.629Z","endTime":null,"duration":1800,"averageEyeContact":85.5},{"id":2,"title":"Project Review","startTime":"2026-03-10T22:07:29.633Z","endTime":null,"duration":3600,"averageEyeContact":62}]
-10:07:38 PM [express] GET /api/sessions 200 in 2ms :: [{"id":1,"title":"Morning Sync","startTime":"2026-03-10T22:07:29.629Z","endTime":null,"duration":1800,"averageEyeContact":85.5},{"id":2,"title":"Project Review","startTime":"2026-03-10T22:07:29.633Z","endTime":null,"duration":3600,"averageEyeContact":62}]
-10:09:53 PM [express] POST /api/sessions 201 in 51ms :: {"id":3,"title":"Meeting 2:09:52 AM","startTime":"2026-03-10T22:09:53.544Z","endTime":null,"duration":null,"averageEyeContact":null}

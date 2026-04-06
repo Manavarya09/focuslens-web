@@ -1,6 +1,25 @@
 node_modules
 dist
+
+# Environment variables (may contain DATABASE_URL and other secrets)
+.env
+.env.*
+!.env.example
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# Replit internal state
+.local/
+
+# Build artifacts
 server/public
 vite.config.ts.*
 *.tar.gz
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
